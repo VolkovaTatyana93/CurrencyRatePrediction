@@ -1,7 +1,6 @@
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -11,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CurrencyUtils {
-    private final int countCurrency = 7;
 
     /**
      * Считывает последние 7 курсов из файла валют и возвращет их
@@ -26,11 +24,10 @@ public class CurrencyUtils {
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             br.readLine();
+            int countCurrency = 7;
             for (int i = 0; i < countCurrency; i++) {
                 lastSevenCurrency.add(parseCurrency(br.readLine()));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,11 +41,11 @@ public class CurrencyUtils {
      * @return - курс валюты 1 номинала
      */
     private Double parseCurrency(String currency) {
-        Double result = 0.0;
+        double result = 0.0;
         try {
             String[] mas = currency.split(";");
-            Double d = Double.valueOf(mas[2].replace("\"", "").replace(" ", "").replace(",", "."));
-            result = d / Double.valueOf(mas[0]);
+            double d = Double.parseDouble(mas[2].replace("\"", "").replace(" ", "").replace(",", "."));
+            result = d / Double.parseDouble(mas[0]);
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -64,8 +61,8 @@ public class CurrencyUtils {
      */
     public Double arithmeticalMean(@NotNull List<Double> list) {
         Double result = 0.0;
-        for (int i = 0; i < list.size(); i++) {
-            result += list.get(i);
+        for (Double aDouble : list) {
+            result += aDouble;
         }
         return result / list.size();
     }
@@ -77,7 +74,7 @@ public class CurrencyUtils {
      * @param currency - курс валюты
      */
     public void printCurrency(@NotNull Calendar date, Double currency) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E dd.MM.YYYY");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E dd.MM.yyyy");
         String currency2 = String.format("%.2f", currency);
         System.out.println(simpleDateFormat.format(date.getTime()) + " - " + currency2);
     }

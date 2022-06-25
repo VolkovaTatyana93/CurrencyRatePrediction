@@ -10,7 +10,7 @@ public class CurrencyRatePredication {
     /**
      * Считывает команду с консоли и запускает нужный метод
      *
-     * @param args
+     * @param args - arguments)
      */
     public static void main(String[] args) {
         try {
@@ -33,7 +33,6 @@ public class CurrencyRatePredication {
      * @param nameCurrency - наименование валюты
      */
     public void currencyRateWeek(String nameCurrency) {
-        CurrencyUtils currencyUtils = new CurrencyUtils();
         currencies = currencyUtils.readerCurrencyFromFile(nameCurrency);
         Calendar date = currencyUtils.getTommorow();
         for (int i = 0; i < 7; i++) {
@@ -50,7 +49,6 @@ public class CurrencyRatePredication {
      * @param NameCurrency - наименование валюты
      */
     public void currencyRateTomorrow(String NameCurrency) {
-        CurrencyUtils currencyUtils = new CurrencyUtils();
         currencies = currencyUtils.readerCurrencyFromFile(NameCurrency);
         Calendar tomorrow = currencyUtils.getTommorow();
         currencyUtils.printCurrency(tomorrow, currencyUtils.arithmeticalMean(currencies));
