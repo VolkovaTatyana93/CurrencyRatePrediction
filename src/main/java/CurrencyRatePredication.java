@@ -1,57 +1,42 @@
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
 
 public class CurrencyRatePredication {
-
+    private static final String TOMORROW = "tomorrow";
+    private static final String WEEK = "week";
     private LinkedList<Double> currencies;
-    private final CurrencyUtils currencyUtils = new CurrencyUtils();
+    private final CurrencySupportApproaches currencySupportApproaches = new CurrencySupportApproaches();
 
     /**
      * Считывает команду с консоли и запускает нужный метод
-     *
-     * @param args - arguments)
      */
-    public static void main(String[] args) {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            String[] command = scanner.nextLine().split(" ");
-            CurrencyRatePredication currencyRatePredication = new CurrencyRatePredication();
-            if (command[2].equals("tomorrow")) {
-                currencyRatePredication.currencyRateTomorrow(command[1]);
-            } else if (command[2].equals("week")) {
-                currencyRatePredication.currencyRateWeek(command[1]);
+    public void currencyRate() {
+        System.out.println("Введите команду формата : rate EUR/TRY/USD week/tomorrow");
+        System.out.println("Например, rate USD week");
+        try (Scanner scanner = new Scanner(System.in)) {
+            String command = scanner.nextLine();
+            while (!command.equals("exit")) {
+                String[] commandArr = command.split("\\s+");
+                if (commandArr.length != 3) {
+                    System.out.println("Неверно введена команда, попробуйте ещё раз");
+                } else if (Arrays.stream(CurrencyName.values()).noneMatch((c) -> c.name().equals(commandArr[1]))) {
+                    System.out.println("Данной валюты нет в списке вычисляемых валют");
+                } else if (!(commandArr[2].equalsIgnoreCase(TOMORROW) || commandArr[2].equalsIgnoreCase(WEEK))) {
+                    System.out.println("За данный период невозможно рассчитать");
+                } else {
+                    if (commandArr[2].equalsIgnoreCase(TOMORROW)) {
+                        CurrencyRatePredicationTomorrow rateTomorrow = new CurrencyRatePredicationTomorrow();
+                        double curs = rateTomorrow.getCurrencyRateTomorrow(commandArr[1]);
+                        rateTomorrow.printCurrencyRateTomorrow(curs);
+                    } else if (commandArr[2].equalsIgnoreCase(WEEK)) {
+                        CurrencyRatePredicationWeek rateWeek = new CurrencyRatePredicationWeek();
+                        List<Currency> currencyWeek = rateWeek.getCurrencyRateWeek(commandArr[1]);
+                        rateWeek.printCurrencyRateWeek(currencyWeek);
+                    }
+                }
+                command = scanner.nextLine();
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
         }
-    }
-
-    /**
-     * Прогнозирует курс переданной валюты на неделю и выводит в консоль
-     *
-     * @param nameCurrency - наименование валюты
-     */
-    public void currencyRateWeek(String nameCurrency) {
-        currencies = currencyUtils.readerCurrencyFromFile(nameCurrency);
-        Calendar date = currencyUtils.getTommorow();
-        for (int i = 0; i < 7; i++) {
-            currencies.add(currencyUtils.arithmeticalMean(currencies));
-            currencies.removeFirst();
-            currencyUtils.printCurrency(date, currencyUtils.arithmeticalMean(currencies));
-            date.add(Calendar.DATE, 1);
-        }
-    }
-
-    /**
-     * Прогнозирует курс переданной валюты на завтра и выводит в консоль
-     *
-     * @param NameCurrency - наименование валюты
-     */
-    public void currencyRateTomorrow(String NameCurrency) {
-        currencies = currencyUtils.readerCurrencyFromFile(NameCurrency);
-        Calendar tomorrow = currencyUtils.getTommorow();
-        currencyUtils.printCurrency(tomorrow, currencyUtils.arithmeticalMean(currencies));
     }
 
 }
